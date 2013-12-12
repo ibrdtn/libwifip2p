@@ -12,55 +12,53 @@
 #ifndef PEER_H_
 #define PEER_H_
 
-using namespace std;
+namespace wifip2p
+{
+	class PeerException : public std::exception
+	{
+	public:
+		PeerException(const std::string &what) : _what(what)
+		{
+		}
 
-namespace wifip2p {
+		virtual ~PeerException() throw ()
+		{
+		}
 
-class PeerException : public exception {
-public:
-	PeerException(const string &what) : _what(what) {
-	}
+		const std::string &what()
+		{
+			return _what;
+		}
 
-	~PeerException() throw () {
-	}
+	private:
+		const std::string _what;
+	};
 
-	string what() {
-		return _what;
-	}
+	class Peer
+	{
+	public:
+		Peer(const std::string &mac);
+		Peer(const std::string &mac, const std::string &name);
+		virtual ~Peer();
 
-private:
-	const string _what;
-};
+		const std::string& getMacAddr() const;
+		const std::string& getName() const;
+		void setName(const std::string &name);
 
+		/**
+		 * Matches the actual peer against the input parameter peer.
+		 * Equality is explicitly defined as matching MAC addresses; as
+		 *  a peer's name is not of any use regarding this issue.
+		 *
+		 * @peer:  peer to be checked for equality.
+		 * Return: true or false, whether this = peer.
+		 *
+		 */
+		bool operator==(const Peer &peer) const;
 
-class Peer {
-
-public:
-	//Peer();
-	Peer(const string &mac);
-	Peer(const string &mac, const string &name);
-	virtual ~Peer();
-
-	string getMacAddr() const;
-	string getName() const;
-	void setName(string name);
-
-	/**
-	 * Matches the actual peer against the input parameter peer.
-	 * Equality is explicitly defined as matching MAC addresses; as
-	 *  a peer's name is not of any use regarding this issue.
-	 *
-	 * @peer:  peer to be checked for equality.
-	 * Return: true or false, whether this = peer.
-	 *
-	 */
-	bool operator==(const Peer &peer) const;
-
-private:
-	string mac_addr;
-	string name;
-
-};
-
+	private:
+		std::string _mac_addr;
+		std::string _name;
+	};
 } /* namespace wifip2p */
 #endif /* PEER_H_ */

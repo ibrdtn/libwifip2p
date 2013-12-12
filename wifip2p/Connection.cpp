@@ -7,33 +7,34 @@
 
 #include "wifip2p/Connection.h"
 
-namespace wifip2p {
+namespace wifip2p
+{
+	Connection::Connection(const NetworkIntf &nic)
+	 : _peer(""), _nic(nic)
+	{
+	}
 
-Connection::Connection(NetworkIntf nic)
-	: peer(""), nic(nic) {
+	Connection::Connection(const Peer &peer, const NetworkIntf &nic)
+	 : _peer(peer), _nic(nic)
+	{
+	}
 
-}
+	Connection::~Connection()
+	{
+	}
 
-Connection::Connection(Peer peer, NetworkIntf nic)
-	: peer(peer),
-	  nic(nic) {
+	const Peer& Connection::getPeer() const
+	{
+		return _peer;
+	}
 
-}
+	void Connection::setPeer(const Peer &peer)
+	{
+		_peer = peer;
+	}
 
-Connection::~Connection() {
-	// TODO Auto-generated destructor stub
-}
-
-Peer Connection::getPeer() const {
-	return this->peer;
-}
-
-void Connection::setPeer(Peer peer) {
-	this->peer = peer;
-}
-
-NetworkIntf Connection::getNetworkIntf() const {
-	return this->nic;
-}
-
+	const NetworkIntf& Connection::getNetworkIntf() const
+	{
+		return _nic;
+	}
 } /* namespace wifip2p */

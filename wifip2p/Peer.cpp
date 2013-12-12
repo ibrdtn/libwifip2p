@@ -6,51 +6,40 @@
  */
 
 #include "wifip2p/Peer.h"
-//TODO include may probably be removed from here.
-#include <algorithm>
 
-using namespace std;
+namespace wifip2p
+{
+	Peer::Peer(const std::string &mac)
+	 : _mac_addr(mac), _name("")
+	{
+	}
 
-namespace wifip2p {
+	Peer::Peer(const std::string &mac, const std::string &name)
+	 : _mac_addr(mac), _name(name)
+	{
+	}
 
-//Peer::Peer() {
-//	;
-//}
+	Peer::~Peer()
+	{
+	}
 
-Peer::Peer(const string &mac)
-	: mac_addr(mac), name("") {
+	bool Peer::operator==(const Peer &peer) const
+	{
+		return _mac_addr == peer._mac_addr;
+	}
 
-}
+	const std::string& Peer::getMacAddr() const
+	{
+		return _mac_addr;
+	}
 
-Peer::Peer(const string &mac, const string &name)
-	: mac_addr(mac),
-	  name(name) {
+	const std::string& Peer::getName() const
+	{
+		return _name;
+	}
 
-}
-
-Peer::~Peer() {
-
-}
-
-
-bool Peer::operator==(const Peer &peer) const {
-	return this->mac_addr == peer.mac_addr;
-}
-
-
-string Peer::getMacAddr() const {
-	return this->mac_addr;
-}
-
-
-string Peer::getName() const {
-	return this->name;
-}
-
-
-void Peer::setName(string name) {
-	this->name = name;
-}
-
-
+	void Peer::setName(const std::string &name)
+	{
+		_name = name;
+	}
 } /* namespace wifip2p */

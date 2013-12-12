@@ -10,32 +10,29 @@
 
 #include <string>
 
-using namespace std;
+namespace wifip2p
+{
+	class NetworkIntf {
+	public:
+		NetworkIntf(const std::string &name);
+		virtual ~NetworkIntf();
 
-namespace wifip2p {
+		const std::string &getName() const;
 
-class NetworkIntf {
-public:
-	NetworkIntf(string name);
-	virtual ~NetworkIntf();
+		/**
+		 * Matches the actual nic against the input parameter
+		 * 	nic, which is a object-reference.
+		 * Equality is defined as matching interface names.
+		 *
+		 * @nic:   The nic object to be tested for equality.
+		 * Return: True, whether both of the NetworkIntf objects'
+		 * 			names are equal or not.
+		 *
+		 */
+		bool operator==(const NetworkIntf &nic) const;
 
-	string getName() const;
-
-	/**
-	 * Matches the actual nic against the input parameter
-	 * 	nic, which is a object-reference.
-	 * Equality is defined as matching interface names.
-	 *
-	 * @nic:   The nic object to be tested for equality.
-	 * Return: True, whether both of the NetworkIntf objects'
-	 * 			names are equal or not.
-	 *
-	 */
-	bool operator==(const NetworkIntf &nic) const;
-
-private:
-	string name;
-};
-
+	private:
+		const std::string _name;
+	};
 } /* namespace wifip2p */
 #endif /* NETWORKINTF_H_ */

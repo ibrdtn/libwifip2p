@@ -13,15 +13,13 @@
 #include <iostream>
 #include <common/wpa_ctrl.h>
 
-using namespace std;
-
-namespace wifip2p {
-
+namespace wifip2p
+{
 	const std::string SupplicantHandle::TAG = "SupplicantHandle";
 
-	const string SERVDISC_TYPE = "upnp";
-	const string SERVDISC_VERS = "10";
-	const string BROADCAST = "00:00:00:00:00:00";
+	const std::string SERVDISC_TYPE = "upnp";
+	const std::string SERVDISC_VERS = "10";
+	const std::string BROADCAST = "00:00:00:00:00:00";
 
 	SupplicantHandle::SupplicantHandle(bool monitor, Logger &logger)
 		: _handle(NULL),
@@ -36,7 +34,6 @@ namespace wifip2p {
 			wpa_ctrl_close((struct wpa_ctrl*)_handle);
 
 	}
-
 
 	void SupplicantHandle::open(const char *ctrl_path) throw (SupplicantHandleException) {
 
@@ -57,28 +54,26 @@ namespace wifip2p {
 		}
 	}
 
-
-	void SupplicantHandle::init(string name, list<string> services) throw (SupplicantHandleException) {
-
+	void SupplicantHandle::init(const std::string &name, const std::list<std::string> &services) throw (SupplicantHandleException)
+	{
 		try {
 			this->setDeviceName(name);
 			this->flushServices();
 
-			list<string>::iterator it = services.begin();
-			if (!services.empty()) {
-				for (; it != services.end(); ++it) {
-					this->addService(name, *it);
-				}
+			for (std::list<std::string>::const_iterator it = services.begin(); it != services.end(); ++it)
+			{
+				this->addService(name, *it);
 			}
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	bool SupplicantHandle::setDeviceName(string name) throw (SupplicantHandleException) {
+	bool SupplicantHandle::setDeviceName(const std::string &name) throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("SET device_name " + name, NULL);
+			std::string ret;
+			this->p2pCommand("SET device_name " + name, ret);
 			return true;
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
@@ -86,9 +81,11 @@ namespace wifip2p {
 		return false;
 	}
 
-	bool SupplicantHandle::flushServices() throw (SupplicantHandleException) {
+	bool SupplicantHandle::flushServices() throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_SERVICE_FLUSH", NULL);
+			std::string ret;
+			this->p2pCommand("P2P_SERVICE_FLUSH", ret);
 			return true;
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
@@ -96,13 +93,14 @@ namespace wifip2p {
 		return false;
 	}
 
-
-	bool SupplicantHandle::addService(string name, string service) throw (SupplicantHandleException) {
+	bool SupplicantHandle::addService(const std::string &name, const std::string &service) throw (SupplicantHandleException)
+	{
 		try {
+			std::string ret;
 			this->p2pCommand("P2P_SERVICE_ADD "
 								+ SERVDISC_TYPE + " "
 								+ SERVDISC_VERS + " "
-								+ service + "$" + name,	NULL);
+								+ service + "$" + name,	ret);
 			return true;
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
@@ -110,40 +108,42 @@ namespace wifip2p {
 		return false;
 	}
 
-
-	void SupplicantHandle::findPeers() throw (SupplicantHandleException) {
+	void SupplicantHandle::findPeers() throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_FIND", NULL);
+			std::string ret;
+			this->p2pCommand("P2P_FIND", ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::findPeers(int seconds) throw (SupplicantHandleException) {
+	void SupplicantHandle::findPeers(int seconds) throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_FIND " + seconds, NULL);
+			std::string ret;
+			this->p2pCommand("P2P_FIND " + seconds, ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::findPeersStop() throw (SupplicantHandleException) {
+	void SupplicantHandle::findPeersStop() throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_STOP_FIND", NULL);
+			std::string ret;
+			this->p2pCommand("P2P_STOP_FIND", ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::listen(list<Peer> &peers, list<Connection> &connections,
-			list<string> &services, set<string> &sdreq_id,
-			WifiP2PInterface &ext_if) throw (SupplicantHandleException) {
-
-		if (this->monitor_mode) {
-
+	void SupplicantHandle::listen(std::list<Peer> &peers, std::list<Connection> &connections,
+			std::list<std::string> &services, std::set<std::string> &sdreq_id,
+			WifiP2PInterface &ext_if) throw (SupplicantHandleException)
+	{
+		if (this->monitor_mode)
+		{
 			int x = wpa_ctrl_pending((struct wpa_ctrl*)_handle);
 
 			char buf[256];
@@ -153,8 +153,8 @@ namespace wifip2p {
 
 				wpa_ctrl_recv((struct wpa_ctrl*)_handle, &buf[0], &len);
 
-				string buffer(buf+3, len-3);
-				vector<string> msg = msgDecompose(buffer, " ");
+				const std::string buffer(buf+3, len-3);
+				const std::vector<std::string> msg = msgDecompose(buffer, " ");
 
 				/* EVENT >> [DEVICE_FOUND]
 				 *
@@ -172,10 +172,10 @@ namespace wifip2p {
 					 *  msg.at(2).substr(13): "<MAC-ADDR>"
 					 */
 
-					string mac(msg.at(2).substr(13));
+					std::string mac(msg.at(2).substr(13));
 					Peer p(mac);
 
-					list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), p);
+					std::list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), p);
 
 					if (peer_it == peers.end()) {
 						peers.push_back(p);
@@ -223,7 +223,7 @@ namespace wifip2p {
 							NetworkIntf nic(msg.at(1));
 
 							//find peer within fully discovered peers >>
-							list<Peer>::const_iterator peer_it =
+							std::list<Peer>::const_iterator peer_it =
 									find(peers.begin(), peers.end(), temp_p);
 
 							//create connection and push_back to list >>
@@ -259,7 +259,7 @@ namespace wifip2p {
 
 					Peer connected_peer(msg.at(2).substr(13));
 					_logger.log_debug(50, TAG, "The connection-peer should be " + connected_peer.getMacAddr());
-					list<Peer>::const_iterator peer_it =
+					std::list<Peer>::const_iterator peer_it =
 							find(peers.begin(), peers.end(), connected_peer);
 					_logger.log_debug(60, TAG, "The connection-peer is " + peer_it->getMacAddr() + "; " + peer_it->getName());
 
@@ -288,9 +288,9 @@ namespace wifip2p {
 
 					_logger.log_debug(40, TAG, "EVENT >> [AP_STA_DISCONNECTED]");
 
-					string mac_lost = msg.at(2).substr(13);
+					std::string mac_lost = msg.at(2).substr(13);
 
-					list<Connection>::iterator it = connections.begin();
+					std::list<Connection>::iterator it = connections.begin();
 
 					for (; it != connections.end(); ++it) {
 						if (it->getPeer().getMacAddr() == mac_lost) {
@@ -315,7 +315,7 @@ namespace wifip2p {
 
 					_logger.log_debug(40, TAG, "EVENT >> [GROUP_REMOVED]");
 
-					list<Connection>::iterator it = connections.begin();
+					std::list<Connection>::iterator it = connections.begin();
 
 					for (; it != connections.end(); ++it) {
 						if (it->getNetworkIntf().getName() == msg.at(1)) {
@@ -345,14 +345,14 @@ namespace wifip2p {
 					_logger.log_debug(40, TAG, "EVENT >> [GROUP_NEG_REQUEST]");
 
 					Peer temp_p(msg.at(1));
-					list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), temp_p);
+					std::list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), temp_p);
 
 					//peer is contained within list >>
 					if (peer_it != peers.end()) {
 						// peer is fully discovered >>
 						if (peer_it->getName() != "") {
 
-							list<Connection>::iterator conn_it = connections.begin();
+							std::list<Connection>::iterator conn_it = connections.begin();
 							bool contained = false;
 
 							for (; conn_it != connections.end(); ++conn_it) {
@@ -389,7 +389,7 @@ namespace wifip2p {
 
 					Peer p(msg.at(2));
 
-					const list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), p);
+					const std::list<Peer>::const_iterator peer_it = find(peers.begin(), peers.end(), p);
 
 					// peer is already contained in peers >>
 					if (peer_it != peers.end()) {
@@ -402,13 +402,13 @@ namespace wifip2p {
 							// service request likely to contain a proper request
 							if (msg.at(5).size() > 10) {
 
-								string frag_tlv(msg.at(5).substr(10));
+								std::string frag_tlv(msg.at(5).substr(10));
 								_logger.log_debug(45, TAG, "TLV data fragment: " + frag_tlv);
 
-								string req(getStringFromHexTLV(frag_tlv));
+								std::string req(getStringFromHexTLV(frag_tlv));
 								_logger.log_debug(45, TAG, "Requested Service Data from TLV: " + req);
 
-								list<string>::iterator serv_it = services.begin();
+								std::list<std::string>::iterator serv_it = services.begin();
 								for (; serv_it != services.end(); ++serv_it) {
 									// one locally registered/own service requested >>
 									if (matchingService(*serv_it, req)) {
@@ -418,7 +418,7 @@ namespace wifip2p {
 							}
 						// peer is not yet fully discovered >>
 						} else {
-							list<string>::iterator it = services.begin();
+							std::list<std::string>::iterator it = services.begin();
 							for (; it != services.end(); ++it)
 								requestService(*peer_it, *it, sdreq_id);
 						}
@@ -449,7 +449,7 @@ namespace wifip2p {
 					// non-empty service response received >>
 					if (msg.at(3) != "0300020101" && msg.at(3) != "0300020102") {
 						Peer p(msg.at(1));
-						list<Peer>::iterator peer_it = find(peers.begin(), peers.end(), p);
+						std::list<Peer>::iterator peer_it = find(peers.begin(), peers.end(), p);
 
 						/*
 						 * Peer found within peers >>
@@ -468,9 +468,9 @@ namespace wifip2p {
 									 * Convention: Services are registered at
 									 * 	peers wpa_s' like
 									 *
-									 * 	<ServiceName_string>$<DeviceName_string>
+									 * 	<ServiceName_std::string>$<DeviceName_std::string>
 									 *
-									 * 	so a typical string representation of
+									 * 	so a typical std::string representation of
 									 * 	a TLV would look like
 									 * 	"SomeService$SomeArbitraryDeviceName"
 									 * Otherwise, a message will be written to
@@ -478,8 +478,8 @@ namespace wifip2p {
 									 *
 									 */
 
-									string tlv = getStringFromHexTLV(msg.at(3).substr(12));
-									string name;
+									std::string tlv = getStringFromHexTLV(msg.at(3).substr(12));
+									std::string name;
 									unsigned int pos = tlv.find_first_of('$');
 
 									if (pos < tlv.length()) {
@@ -506,7 +506,7 @@ namespace wifip2p {
 						} else {
 							// TLV data assumed to contain proper information
 							if (msg.at(3).length() > 10) {
-								string name(msgDecompose(getStringFromHexTLV(msg.at(3).substr(12)), "$")[1]);
+								std::string name(msgDecompose(getStringFromHexTLV(msg.at(3).substr(12)), "$")[1]);
 								if (name != "") {
 									p.setName(name);
 									peers.push_back(p);
@@ -526,16 +526,16 @@ namespace wifip2p {
 		}
 	}
 
-
-	void SupplicantHandle::requestService(string service, set<string> &sdreq_id)
-			throw (SupplicantHandleException) {
+	void SupplicantHandle::requestService(const std::string &service, std::set<std::string> &sdreq_id)
+			throw (SupplicantHandleException)
+	{
 		try {
-			string returned_id;
+			std::string returned_id;
 			this->p2pCommand("P2P_SERV_DISC_REQ "
 					+ BROADCAST + " "
 					+ SERVDISC_TYPE + " "
 					+ SERVDISC_VERS + " "
-					+ service, &returned_id);
+					+ service, returned_id);
 			sdreq_id.insert(returned_id);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
@@ -543,53 +543,56 @@ namespace wifip2p {
 	}
 
 
-	void SupplicantHandle::requestService(Peer peer, string service, set<string> &sdreq_id)
-			throw (SupplicantHandleException) {
+	void SupplicantHandle::requestService(const Peer &peer, const std::string &service, std::set<std::string> &sdreq_id)
+			throw (SupplicantHandleException)
+	{
 		try {
-			string returned_id;
+			std::string returned_id;
 			this->p2pCommand("P2P_SERV_DISC_REQ "
 					+ peer.getMacAddr() + " "
 					+ SERVDISC_TYPE + " "
 					+ SERVDISC_VERS + " "
-					+ service, &returned_id);
+					+ service, returned_id);
 			sdreq_id.insert(returned_id);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::requestServiceCancel(string sdreq_id) throw (SupplicantHandleException) {
+	void SupplicantHandle::requestServiceCancel(const std::string &sdreq_id) throw (SupplicantHandleException)
+	{
 		try {
 			_logger.log_debug(45, TAG, "ServiceRquest_ID : " + sdreq_id);
-			this->p2pCommand("P2P_SERV_DISC_CANCEL_REQ " + sdreq_id, NULL);
+			std::string ret;
+			this->p2pCommand("P2P_SERV_DISC_CANCEL_REQ " + sdreq_id, ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::connectToPeer(Peer peer) throw (SupplicantHandleException) {
+	void SupplicantHandle::connectToPeer(const Peer &peer) throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_CONNECT " + peer.getMacAddr() + " pbc", NULL);
+			std::string ret;
+			this->p2pCommand("P2P_CONNECT " + peer.getMacAddr() + " pbc", ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	void SupplicantHandle::disconnect(Connection conn) throw (SupplicantHandleException) {
+	void SupplicantHandle::disconnect(const Connection &conn) throw (SupplicantHandleException)
+	{
 		try {
-			this->p2pCommand("P2P_GROUP_REMOVE " + conn.getNetworkIntf().getName(), NULL);
+			std::string ret;
+			this->p2pCommand("P2P_GROUP_REMOVE " + conn.getNetworkIntf().getName(), ret);
 		} catch (SupplicantHandleException &ex) {
 			throw SupplicantHandleException(ex.what());
 		}
 	}
 
-
-	bool SupplicantHandle::p2pCommand(string cmd, string *direct_feedback) throw (SupplicantHandleException) {
-
-		vector<char> reply_buf(64);
+	void SupplicantHandle::p2pCommand(const std::string &cmd, std::string &response_msg) throw (SupplicantHandleException)
+	{
+		std::vector<char> reply_buf(64);
 		size_t buf_len = reply_buf.size();
 
 		int ret = wpa_ctrl_request((struct wpa_ctrl*) _handle,
@@ -601,45 +604,35 @@ namespace wifip2p {
 		if (ret == -2)
 			throw SupplicantHandleException("wpa_s ctrl_i/f; communication timed out.");
 
-		string reply(&reply_buf[0], buf_len);
+		response_msg = std::string(&reply_buf[0], buf_len);
 
-		if (reply == "FAIL") {
+		if (response_msg == "FAIL") {
 			throw SupplicantHandleException("wpa_s was not able to initiate <" + cmd + "> successfully.");
-		} else {
-			if (direct_feedback != NULL)
-				*direct_feedback = reply;
-			return true;
 		}
-
-		return false;
-
 	}
 
-
-	vector<string> SupplicantHandle::msgDecompose(string buffer, string tok) {
-
-		//string buffer(buf+3);
-		vector<string> ret = tokenize(tok, buffer, -1);
+	std::vector<std::string> SupplicantHandle::msgDecompose(const std::string &buffer, const std::string &tok)
+	{
+		std::vector<std::string> ret = tokenize(tok, buffer, -1);
 		ret[0] += " ";
 		return ret;
 	}
 
-
-	vector<string> SupplicantHandle::tokenize(string token, string data, size_t max) const
+	std::vector<std::string> SupplicantHandle::tokenize(const std::string &token, const std::string &data, size_t max) const
 	{
-		vector<string> l;
-		string value;
+		std::vector<std::string> l;
+		std::string value;
 
 		// Skip delimiters at beginning.
-		string::size_type pos = data.find_first_not_of(token, 0);
+		std::string::size_type pos = data.find_first_not_of(token, 0);
 
-		while (pos != string::npos)
+		while (pos != std::string::npos)
 		{
 			// Find first "non-delimiter".
-			string::size_type tokenPos = data.find_first_of(token, pos);
+			std::string::size_type tokenPos = data.find_first_of(token, pos);
 
 			// Found a token, add it to the vector.
-			if(tokenPos == string::npos){
+			if(tokenPos == std::string::npos){
 				value = data.substr(pos);
 				l.push_back(value);
 				break;
@@ -653,7 +646,7 @@ namespace wifip2p {
 			tokenPos = data.find_first_of(token, pos);
 
 			// if maximum reached
-			if (l.size() >= max && pos != string::npos)
+			if (l.size() >= max && pos != std::string::npos)
 			{
 				// add the remaining part to the vector as last element
 				l.push_back(data.substr(pos, data.length() - pos));
@@ -666,10 +659,9 @@ namespace wifip2p {
 		return l;
 	}
 
-
-	string SupplicantHandle::getStringFromHexTLV(string tlv) {
-
-		string result;
+	std::string SupplicantHandle::getStringFromHexTLV(const std::string &tlv)
+	{
+		std::string result;
 
 		bool x = true;
 		short secnd, first;
@@ -691,25 +683,24 @@ namespace wifip2p {
 		return result;
 	}
 
-
-	bool SupplicantHandle::setMonitorMode() throw (SupplicantHandleException) {
+	bool SupplicantHandle::setMonitorMode() throw (SupplicantHandleException)
+	{
 		if (wpa_ctrl_attach((struct wpa_ctrl*) (_handle)) == 0)
 			return true;
 		else
 			return false;
 	}
 
-
-	int SupplicantHandle::getFD() const throw (SupplicantHandleException) {
+	int SupplicantHandle::getFD() const throw (SupplicantHandleException)
+	{
 		if (monitor_mode)
 			return wpa_ctrl_get_fd((struct wpa_ctrl*) (_handle));
 		else
 			throw SupplicantHandleException("Unable to get file descriptor. wpa_s not in monitor mode.");
 	}
 
-
-	bool SupplicantHandle::matchingService(string own, string foreign) {
-
+	bool SupplicantHandle::matchingService(const std::string &own, const std::string &foreign)
+	{
 		if (own.size() < foreign.size() || foreign.size() == 0) {
 			return false;
 		} else {
@@ -735,8 +726,8 @@ namespace wifip2p {
 		return false;
 	}
 
-
-	short SupplicantHandle::hexlookup(char c) {
+	short SupplicantHandle::hexlookup(char c)
+	{
 		short ret;
 		switch (c) {
 			case 'a':
@@ -781,5 +772,4 @@ namespace wifip2p {
 		}
 		return ret;
 	}
-
 } /* namespace wifip2p */

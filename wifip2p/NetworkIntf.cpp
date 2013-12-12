@@ -7,26 +7,24 @@
 
 #include "wifip2p/NetworkIntf.h"
 
-using namespace std;
+namespace wifip2p
+{
+	NetworkIntf::NetworkIntf(const std::string &name)
+	 : _name(name)
+	{
+	}
 
-namespace wifip2p {
+	NetworkIntf::~NetworkIntf()
+	{
+	}
 
-NetworkIntf::NetworkIntf(string name)
-	: name(name) {
+	const std::string& NetworkIntf::getName() const
+	{
+		return _name;
+	}
 
-}
-
-NetworkIntf::~NetworkIntf() {
-	// TODO Auto-generated destructor stub
-}
-
-string NetworkIntf::getName() const {
-	return this->name;
-}
-
-
-bool NetworkIntf::operator==(const NetworkIntf &nic) const {
-	return this->getName() == nic.getName();
-}
-
+	bool NetworkIntf::operator==(const NetworkIntf &nic) const
+	{
+		return _name == nic._name;
+	}
 } /* namespace wifip2p */

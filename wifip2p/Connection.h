@@ -11,23 +11,22 @@
 #include "wifip2p/Peer.h"
 #include "wifip2p/NetworkIntf.h"
 
-namespace wifip2p {
+namespace wifip2p
+{
+	class Connection {
+	public:
+		Connection(const NetworkIntf &nic);
+		Connection(const Peer &peer, const NetworkIntf &nic);
+		virtual ~Connection();
 
-class Connection {
-public:
-	Connection(NetworkIntf nic);
-	Connection(Peer peer, NetworkIntf nic);
-	virtual ~Connection();
+		const Peer& getPeer() const;
+		void setPeer(const Peer &peer);
+		const NetworkIntf& getNetworkIntf() const;
 
-	Peer getPeer() const;
-	void setPeer(Peer peer);
-	NetworkIntf getNetworkIntf() const;
+	private:
+		Peer 		_peer;
+		NetworkIntf _nic;
 
-private:
-	Peer 		peer;
-	NetworkIntf nic;
-
-};
-
+	};
 } /* namespace wifip2p */
 #endif /* CONNECTION_H_ */
